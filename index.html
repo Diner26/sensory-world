@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Sensory World</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-top: 20px;
+    }
+    
+    .logo-img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.3));
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.7;
+      font-weight: 300;
+    }
+    
+    .language-switcher {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      display: flex;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 8px;
+      border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .lang-btn {
+      background: transparent;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0.6;
+    }
+    
+    .lang-btn.active {
+      background: rgba(255, 255, 255, 0.2);
+      opacity: 1;
+    }
+    
+    .status-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .device-list {
+      margin-bottom: 20px;
+    }
+    
+    .device-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .device-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .device-item.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+      border-color: #667eea;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .device-info {
+      flex: 1;
+    }
+    
+    .device-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .device-id {
+      font-size: 12px;
+      opacity: 0.6;
+      font-family: monospace;
+    }
+    
+    .device-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+    }
+    
+    .icon-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff4757;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-dot.connected {
+      background: #2ed573;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      box-shadow: none;
+    }
+    
+    .btn-disconnect {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    }
+    
+    .control-section {
+      margin-bottom: 25px;
+    }
+    
+    .control-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+    
+    .power-toggle {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .power-btn {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .power-btn.active {
+      background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+      border-color: #2ed573;
+      box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+    }
+    
+    .color-picker-wrapper {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    #colorPicker {
+      width: 100%;
+      height: 100%;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .slider-wrapper {
+      position: relative;
+    }
+    
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #1a1a2e 0%, #ffffff 100%);
+      outline: none;
+      margin: 15px 0;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .brightness-value {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    
+    .rainbow-btn {
+      background: linear-gradient(90deg, 
+        #ff0000 0%, #ff7f00 14%, #ffff00 28%, 
+        #00ff00 42%, #0000ff 57%, #4b0082 71%, 
+        #9400d3 85%, #ff0000 100%);
+      background-size: 200% 100%;
+      animation: rainbow 3s linear infinite;
+    }
+    
+    @keyframes rainbow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .current-color {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      opacity: 0.5;
+      font-size: 12px;
+    }
+    
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-label {
+      font-size: 14px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .modal-buttons .btn {
+      flex: 1;
+    }
+    
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #667eea;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      padding: 8px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" data-lang="en" onclick="switchLanguage('en')">EN</button>
+    <button class="lang-btn" data-lang="lt" onclick="switchLanguage('lt')">LT</button>
+  </div>
+  
+  <div class="container">
+    <div class="header">
+      <img src="logo.jpg" alt="Sensory World" class="logo-img">
+      <h1 data-i18n="app-title">Sensory World</h1>
+      <div class="subtitle" data-i18n="app-subtitle">RGB Control</div>
+    </div>
+    
+    <!-- Device List View -->
+    <div id="deviceListView">
+      <div class="status-card">
+        <div class="control-label" data-i18n="my-devices">My Devices</div>
+        <div class="device-list" id="deviceList">
+          <!-- Devices will be added here dynamically -->
+        </div>
+        <button class="btn" onclick="scanDevices()">
+          <span data-i18n="scan-btn">🔍 Scan for New Devices</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Device Control View -->
+    <div id="deviceControlView" class="hidden">
+      
+      <div class="back-btn" onclick="showDeviceList()">
+        <span data-i18n="back-btn">← Back to List</span>
+      </div>
+      
+      <div class="status-card">
+        <div class="control-label">
+          <span id="currentDeviceName">Device</span>
+        </div>
+        <div class="status">
+          <div class="status-indicator">
+            <div class="status-dot connected"></div>
+            <span data-i18n="connected">Connected</span>
+          </div>
+          <div class="current-color" id="currentColor" style="background: rgb(255,255,255);"></div>
+        </div>
+        <button class="btn btn-disconnect" onclick="disconnectDevice()">
+          <span data-i18n="disconnect-btn">Disconnect</span>
+        </button>
+      </div>
+      
+      <!-- Power Control -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label" data-i18n="power-label">Power</div>
+          <div class="power-toggle">
+            <button class="power-btn active" id="powerOn" onclick="setPower(true)">
+              <span data-i18n="power-on">⚡ On</span>
+            </button>
+            <button class="power-btn" id="powerOff" onclick="setPower(false)">
+              <span data-i18n="power-off">⭕ Off</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Color Picker -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label" data-i18n="color-label">Color</div>
+          <div class="color-picker-wrapper">
+            <input type="color" id="colorPicker" value="#ffffff">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Brightness Control -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label" data-i18n="brightness-label">Brightness</div>
+          <input type="range" min="20" max="200" value="120" class="slider" id="brightnessSlider">
+          <div class="brightness-value" id="brightnessValue">120</div>
+        </div>
+      </div>
+      
+      <!-- Rainbow Mode -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label" data-i18n="effects-label">Effects</div>
+          <button class="btn rainbow-btn" onclick="setRainbowMode()">
+            <span data-i18n="rainbow-btn">🌈 Rainbow</span>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="footer">
+      v2.0 | Sensory World
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div id="renameModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-title" data-i18n="rename-title">Rename Device</div>
+      <div class="input-group">
+        <div class="input-label" data-i18n="rename-label">New name</div>
+        <input type="text" id="renameInput" data-i18n-placeholder="rename-placeholder">
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeRenameModal()">
+          <span data-i18n="cancel-btn">Cancel</span>
+        </button>
+        <button class="btn" onclick="saveRename()">
+          <span data-i18n="save-btn">Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // TRANSLATIONS
+    // ============================================================
+    const translations = {
+      en: {
+        'app-title': 'Sensory World',
+        'app-subtitle': 'RGB Control',
+        'my-devices': 'My Devices',
+        'scan-btn': '🔍 Scan for New Devices',
+        'back-btn': '← Back to List',
+        'connected': 'Connected',
+        'disconnect-btn': 'Disconnect',
+        'power-label': 'Power',
+        'power-on': '⚡ On',
+        'power-off': '⭕ Off',
+        'color-label': 'Color',
+        'brightness-label': 'Brightness',
+        'effects-label': 'Effects',
+        'rainbow-btn': '🌈 Rainbow',
+        'rename-title': 'Rename Device',
+        'rename-label': 'New name',
+        'rename-placeholder': 'e.g. Living Room, Bedroom...',
+        'cancel-btn': 'Cancel',
+        'save-btn': 'Save',
+        'no-devices': 'No devices found',
+        'no-devices-hint': 'Tap the button below'
+      },
+      lt: {
+        'app-title': 'Sensory World',
+        'app-subtitle': 'RGB valdymas',
+        'my-devices': 'Mano įrenginiai',
+        'scan-btn': '🔍 Ieškoti naujų įrenginių',
+        'back-btn': '← Atgal į sąrašą',
+        'connected': 'Prijungta',
+        'disconnect-btn': 'Atsijungti',
+        'power-label': 'Maitinimas',
+        'power-on': '⚡ Įjungta',
+        'power-off': '⭕ Išjungta',
+        'color-label': 'Spalva',
+        'brightness-label': 'Šviesumas',
+        'effects-label': 'Efektai',
+        'rainbow-btn': '🌈 Vaivorykštė',
+        'rename-title': 'Pervadinti įrenginį',
+        'rename-label': 'Naujas pavadinimas',
+        'rename-placeholder': 'pvz. Svetainė, Miegamasis...',
+        'cancel-btn': 'Atšaukti',
+        'save-btn': 'Išsaugoti',
+        'no-devices': 'Nerasta įrenginių',
+        'no-devices-hint': 'Paspauskite mygtuką žemiau'
+      }
+    };
+    
+    let currentLanguage = localStorage.getItem('sensory_language') || 'en';
+    
+    function switchLanguage(lang) {
+      currentLanguage = lang;
+      localStorage.setItem('sensory_language', lang);
+      
+      // Update button states
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.lang === lang);
+      });
+      
+      // Update all translated elements
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      
+      // Update placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+      
+      // Update device list if visible
+      renderDeviceList();
+    }
+    
+    // Initialize language on load
+    window.addEventListener('DOMContentLoaded', () => {
+      switchLanguage(currentLanguage);
+      loadSavedDevices();
+    });
+    
+    // ============================================================
+    // BLE Configuration
+    // ============================================================
+    const SERVICE_UUID = '12345678-1234-1234-1234-123456789abc';
+    const CHAR_COLOR_UUID = '12345678-1234-1234-1234-123456789abd';
+    const CHAR_BRIGHTNESS_UUID = '12345678-1234-1234-1234-123456789abe';
+    const CHAR_POWER_UUID = '12345678-1234-1234-1234-123456789abf';
+    const CHAR_MODE_UUID = '12345678-1234-1234-1234-123456789ac0';
+    
+    let currentDevice = null;
+    let connectedServer = null;
+    let colorChar = null;
+    let brightnessChar = null;
+    let powerChar = null;
+    let modeChar = null;
+    let renamingDeviceId = null;
+    
+    // Device storage (saved in browser localStorage)
+    let savedDevices = [];
+    
+    // Load saved devices from localStorage
+    function loadSavedDevices() {
+      const saved = localStorage.getItem('sensory_devices');
+      if (saved) {
+        savedDevices = JSON.parse(saved);
+      }
+      renderDeviceList();
+    }
+    
+    // Save devices to localStorage
+    function saveSavedDevices() {
+      localStorage.setItem('sensory_devices', JSON.stringify(savedDevices));
+    }
+    
+    // Render device list
+    function renderDeviceList() {
+      const listEl = document.getElementById('deviceList');
+      const noDevicesText = translations[currentLanguage]['no-devices'];
+      const noDevicesHint = translations[currentLanguage]['no-devices-hint'];
+      
+      if (savedDevices.length === 0) {
+        listEl.innerHTML = `<div style="text-align: center; opacity: 0.6; padding: 20px;">${noDevicesText}<br><small>${noDevicesHint}</small></div>`;
+        return;
+      }
+      
+      listEl.innerHTML = savedDevices.map((device, index) => `
+        <div class="device-item" onclick="connectToDevice('${device.id}')">
+          <div class="device-info">
+            <div class="device-name">
+              <span class="status-dot ${device.connected ? 'connected' : ''}"></span>
+              ${device.name}
+            </div>
+            <div class="device-id">${device.id.substring(0, 17)}...</div>
+          </div>
+          <div class="device-actions">
+            <button class="icon-btn" onclick="event.stopPropagation(); openRenameModal('${device.id}')">
+              ✏️
+            </button>
+            <button class="icon-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Scan for new devices
+    async function scanDevices() {
+      try {
+        console.log('Scanning for Bluetooth devices...');
+        
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: 'Pojuciu pasaulis' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        // Check if device already exists
+        const existingIndex = savedDevices.findIndex(d => d.id === device.id);
+        
+        if (existingIndex === -1) {
+          // New device - add with default name
+          const defaultName = currentLanguage === 'lt' ? 'Naujas įrenginys' : 'New Device';
+          savedDevices.push({
+            id: device.id,
+            name: device.name || defaultName,
+            connected: false
+          });
+          saveSavedDevices();
+        }
+        
+        renderDeviceList();
+        
+        // Auto-connect to the newly scanned device
+        await connectToDevice(device.id);
+        
+      } catch (error) {
+        console.error('Scan error:', error);
+        if (error.name !== 'NotFoundError') {
+          const errorMsg = currentLanguage === 'lt' ? 'Klaida: ' : 'Error: ';
+          alert(errorMsg + error.message);
+        }
+      }
+    }
+    
+    // Connect to specific device
+    async function connectToDevice(deviceId) {
+      try {
+        console.log('Connecting to device:', deviceId);
+        
+        // Request device again (Web Bluetooth requirement)
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: 'Pojuciu pasaulis' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        // Make sure it's the right device
+        if (device.id !== deviceId) {
+          console.log('Wrong device selected');
+          return;
+        }
+        
+        currentDevice = device;
+        
+        // Connect to GATT server
+        connectedServer = await device.gatt.connect();
+        const service = await connectedServer.getPrimaryService(SERVICE_UUID);
+        
+        // Get characteristics
+        colorChar = await service.getCharacteristic(CHAR_COLOR_UUID);
+        brightnessChar = await service.getCharacteristic(CHAR_BRIGHTNESS_UUID);
+        powerChar = await service.getCharacteristic(CHAR_POWER_UUID);
+        modeChar = await service.getCharacteristic(CHAR_MODE_UUID);
+        
+        // Update device status
+        const deviceIndex = savedDevices.findIndex(d => d.id === deviceId);
+        if (deviceIndex !== -1) {
+          savedDevices[deviceIndex].connected = true;
+          document.getElementById('currentDeviceName').textContent = savedDevices[deviceIndex].name;
+        }
+        
+        // Show control view
+        document.getElementById('deviceListView').classList.add('hidden');
+        document.getElementById('deviceControlView').classList.remove('hidden');
+        
+        // Setup controls
+        setupControls();
+        
+        console.log('Connected successfully!');
+        
+      } catch (error) {
+        console.error('Connection error:', error);
+        const errorMsg = currentLanguage === 'lt' ? 'Nepavyko prisijungti: ' : 'Connection failed: ';
+        alert(errorMsg + error.message);
+      }
+    }
+    
+    // Disconnect from device
+    function disconnectDevice() {
+      if (connectedServer) {
+        connectedServer.disconnect();
+      }
+      
+      // Update all devices to disconnected
+      savedDevices.forEach(d => d.connected = false);
+      
+      // Reset variables
+      currentDevice = null;
+      connectedServer = null;
+      colorChar = null;
+      brightnessChar = null;
+      powerChar = null;
+      modeChar = null;
+      
+      // Show device list
+      showDeviceList();
+    }
+    
+    // Show device list
+    function showDeviceList() {
+      document.getElementById('deviceListView').classList.remove('hidden');
+      document.getElementById('deviceControlView').classList.add('hidden');
+      renderDeviceList();
+    }
+    
+    // Remove device from list
+    function removeDevice(deviceId) {
+      const confirmMsg = currentLanguage === 'lt' ? 
+        'Ar tikrai norite pašalinti šį įrenginį?' : 
+        'Are you sure you want to remove this device?';
+      
+      if (confirm(confirmMsg)) {
+        savedDevices = savedDevices.filter(d => d.id !== deviceId);
+        saveSavedDevices();
+        renderDeviceList();
+      }
+    }
+    
+    // Open rename modal
+    function openRenameModal(deviceId) {
+      renamingDeviceId = deviceId;
+      const device = savedDevices.find(d => d.id === deviceId);
+      if (device) {
+        document.getElementById('renameInput').value = device.name;
+        document.getElementById('renameModal').classList.remove('hidden');
+      }
+    }
+    
+    // Close rename modal
+    function closeRenameModal() {
+      document.getElementById('renameModal').classList.add('hidden');
+      renamingDeviceId = null;
+    }
+    
+    // Save rename
+    function saveRename() {
+      const newName = document.getElementById('renameInput').value.trim();
+      const errorMsg = currentLanguage === 'lt' ? 'Įveskite pavadinimą' : 'Please enter a name';
+      
+      if (!newName) {
+        alert(errorMsg);
+        return;
+      }
+      
+      const deviceIndex = savedDevices.findIndex(d => d.id === renamingDeviceId);
+      if (deviceIndex !== -1) {
+        savedDevices[deviceIndex].name = newName;
+        saveSavedDevices();
+        renderDeviceList();
+        
+        // Update current device name if connected
+        if (currentDevice && currentDevice.id === renamingDeviceId) {
+          document.getElementById('currentDeviceName').textContent = newName;
+        }
+      }
+      
+      closeRenameModal();
+    }
+    
+    // Setup control event listeners
+    function setupControls() {
+      const colorPicker = document.getElementById('colorPicker');
+      colorPicker.removeEventListener('input', colorPickerHandler);
+      colorPicker.addEventListener('input', colorPickerHandler);
+      
+      const brightnessSlider = document.getElementById('brightnessSlider');
+      brightnessSlider.removeEventListener('input', brightnessHandler);
+      brightnessSlider.addEventListener('input', brightnessHandler);
+    }
+    
+    function colorPickerHandler(e) {
+      setColor(e.target.value);
+    }
+    
+    function brightnessHandler(e) {
+      setBrightness(parseInt(e.target.value));
+    }
+    
+    // Set color
+    async function setColor(hexColor) {
+      if (!colorChar) return;
+      
+      try {
+        const r = parseInt(hexColor.substr(1, 2), 16);
+        const g = parseInt(hexColor.substr(3, 2), 16);
+        const b = parseInt(hexColor.substr(5, 2), 16);
+        
+        const data = new Uint8Array([r, g, b]);
+        await colorChar.writeValue(data);
+        
+        document.getElementById('currentColor').style.background = `rgb(${r},${g},${b})`;
+        
+        console.log(`Color set to RGB(${r},${g},${b})`);
+      } catch (error) {
+        console.error('Error setting color:', error);
+      }
+    }
+    
+    // Set brightness
+    async function setBrightness(value) {
+      if (!brightnessChar) return;
+      
+      try {
+        const data = new Uint8Array([value]);
+        await brightnessChar.writeValue(data);
+        
+        document.getElementById('brightnessValue').textContent = value;
+        
+        console.log(`Brightness set to ${value}`);
+      } catch (error) {
+        console.error('Error setting brightness:', error);
+      }
+    }
+    
+    // Set power
+    async function setPower(isOn) {
+      if (!powerChar) return;
+      
+      try {
+        const data = new Uint8Array([isOn ? 1 : 0]);
+        await powerChar.writeValue(data);
+        
+        document.getElementById('powerOn').classList.toggle('active', isOn);
+        document.getElementById('powerOff').classList.toggle('active', !isOn);
+        
+        console.log(`Power: ${isOn ? 'ON' : 'OFF'}`);
+      } catch (error) {
+        console.error('Error setting power:', error);
+      }
+    }
+    
+    // Set rainbow mode
+    async function setRainbowMode() {
+      if (!modeChar) return;
+      
+      try {
+        const data = new Uint8Array([1]);
+        await modeChar.writeValue(data);
+        
+        console.log('Rainbow mode activated');
+      } catch (error) {
+        console.error('Error setting rainbow mode:', error);
+      }
+    }
+    
+    // Register service worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed'));
+    }
+  </script>
+
+</body>
+</html>
