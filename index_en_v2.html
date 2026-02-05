@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Sensory World</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    
+    .container {
+      max-width: 400px;
+      width: 100%;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-top: 20px;
+    }
+    
+    .logo-img {
+      width: 200px;
+      height: auto;
+      margin-bottom: 15px;
+      filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.3));
+    }
+    
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      opacity: 0.7;
+      font-weight: 300;
+    }
+    
+    .status-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .device-list {
+      margin-bottom: 20px;
+    }
+    
+    .device-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 15px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .device-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .device-item.active {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+      border-color: #667eea;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .device-info {
+      flex: 1;
+    }
+    
+    .device-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .device-id {
+      font-size: 12px;
+      opacity: 0.6;
+      font-family: monospace;
+    }
+    
+    .device-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .icon-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 18px;
+    }
+    
+    .icon-btn:active {
+      transform: scale(0.9);
+    }
+    
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff4757;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-dot.connected {
+      background: #2ed573;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      box-shadow: none;
+    }
+    
+    .btn-disconnect {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+    }
+    
+    .control-section {
+      margin-bottom: 25px;
+    }
+    
+    .control-label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+    
+    .power-toggle {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .power-btn {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .power-btn.active {
+      background: linear-gradient(135deg, #2ed573 0%, #7bed9f 100%);
+      border-color: #2ed573;
+      box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+    }
+    
+    /* Color Circles Grid */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .color-circle {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .color-circle:active {
+      transform: scale(0.9);
+    }
+    
+    .color-circle.selected {
+      border-color: white;
+      border-width: 4px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+    
+    .color-circle.custom {
+      background: conic-gradient(
+        red, yellow, lime, cyan, blue, magenta, red
+      );
+      position: relative;
+    }
+    
+    .color-circle.custom::after {
+      content: '+';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    
+    .slider-wrapper {
+      position: relative;
+      margin-top: 15px;
+    }
+    
+    .slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #1a1a2e 0%, #ffffff 100%);
+      outline: none;
+      margin: 15px 0;
+    }
+    
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .brightness-value {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    
+    .effect-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    .effect-btn.rainbow {
+      background: linear-gradient(90deg, 
+        #ff0000 0%, #ff7f00 14%, #ffff00 28%, 
+        #00ff00 42%, #0000ff 57%, #4b0082 71%, 
+        #9400d3 85%, #ff0000 100%);
+      background-size: 200% 100%;
+      animation: rainbow 3s linear infinite;
+    }
+    
+    .effect-btn.fade {
+      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #45b7d1 100%);
+    }
+    
+    @keyframes rainbow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    
+    .effect-btn:active {
+      transform: scale(0.98);
+    }
+    
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .speed-label {
+      font-size: 12px;
+      opacity: 0.7;
+      min-width: 40px;
+    }
+    
+    .speed-value {
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 60px;
+      text-align: center;
+      color: #667eea;
+    }
+    
+    .speed-slider {
+      flex: 1;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
+    
+    .current-color {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 30px;
+      opacity: 0.5;
+      font-size: 12px;
+    }
+    
+    /* Debug Log */
+    .debug-log {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 150px;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.9);
+      color: #0f0;
+      font-family: monospace;
+      font-size: 10px;
+      padding: 10px;
+      z-index: 2000;
+      display: none;
+    }
+    
+    .debug-log.show {
+      display: block;
+    }
+    
+    .debug-toggle {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 2001;
+    }
+    
+    /* Modal styles */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .modal-content {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .input-group {
+      margin-bottom: 20px;
+    }
+    
+    .input-label {
+      font-size: 14px;
+      margin-bottom: 8px;
+      opacity: 0.8;
+    }
+    
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      font-size: 16px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    input[type="text"]:focus {
+      border-color: #667eea;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .modal-buttons .btn {
+      flex: 1;
+    }
+    
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #667eea;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      padding: 8px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Circular Color Wheel Picker */
+    .color-wheel-container {
+      position: relative;
+      width: 280px;
+      height: 280px;
+      margin: 0 auto 20px;
+    }
+    
+    .color-wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(
+        red 0deg,
+        yellow 60deg,
+        lime 120deg,
+        cyan 180deg,
+        blue 240deg,
+        magenta 300deg,
+        red 360deg
+      );
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    .color-wheel-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 50%;
+      background: radial-gradient(circle, 
+        rgba(255,255,255,1) 0%, 
+        rgba(255,255,255,0) 70%
+      );
+    }
+    
+    .color-picker-handle {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border: 4px solid white;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    
+    .selected-color-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid white;
+      margin: 20px auto;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Debug Toggle -->
+  <button class="debug-toggle" onclick="toggleDebug()">🐛 Debug</button>
+  <div class="debug-log" id="debugLog"></div>
+  
+  <div class="container">
+    <div class="header">
+      <img src="logo.jpg" alt="Sensory World" class="logo-img">
+      <h1>Sensory World</h1>
+      <div class="subtitle">RGB Control</div>
+    </div>
+    
+    <!-- Device List View -->
+    <div id="deviceListView">
+      <div class="status-card">
+        <div class="control-label">My Devices</div>
+        <div class="device-list" id="deviceList"></div>
+        <button class="btn" onclick="scanDevices()">
+          🔍 Scan for New Devices
+        </button>
+      </div>
+    </div>
+    
+    <!-- Device Control View -->
+    <div id="deviceControlView" class="hidden">
+      
+      <div class="back-btn" onclick="showDeviceList()">
+        ← Back to List
+      </div>
+      
+      <div class="status-card">
+        <div class="control-label">
+          <span id="currentDeviceName">Device</span>
+        </div>
+        <div class="status">
+          <div class="status-indicator">
+            <div class="status-dot connected"></div>
+            <span>Connected</span>
+          </div>
+          <div class="current-color" id="currentColor" style="background: rgb(255,255,255);"></div>
+        </div>
+        <button class="btn btn-disconnect" onclick="disconnectDevice()">
+          Disconnect
+        </button>
+      </div>
+      
+      <!-- Power Control -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label">Power</div>
+          <div class="power-toggle">
+            <button class="power-btn active" id="powerOn" onclick="setPower(true)">
+              ⚡ On
+            </button>
+            <button class="power-btn" id="powerOff" onclick="setPower(false)">
+              ⭕ Off
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Color Picker -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label">Quick Colors</div>
+          <div class="color-grid" id="colorGrid"></div>
+        </div>
+      </div>
+      
+      <!-- Brightness Control -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label">Brightness</div>
+          <input type="range" min="20" max="200" value="120" class="slider" id="brightnessSlider">
+          <div class="brightness-value" id="brightnessValue">120</div>
+        </div>
+      </div>
+      
+      <!-- Effects -->
+      <div class="status-card">
+        <div class="control-section">
+          <div class="control-label">Effects</div>
+          <button class="effect-btn rainbow" onclick="setEffect('rainbow')">
+            🌈 Rainbow
+          </button>
+          <button class="effect-btn fade" onclick="setEffect('fade')">
+            🎨 Fade
+          </button>
+          <div class="speed-control">
+            <span class="speed-label">Slow</span>
+            <input type="range" min="200" max="1000" value="500" step="50" class="slider speed-slider" id="speedSlider" oninput="updateSpeed()">
+            <span class="speed-label">Fast</span>
+          </div>
+          <div class="speed-value" id="speedValue">500ms</div>
+        </div>
+      </div>
+      
+    </div>
+    
+    <div class="footer">
+      v3.1 Debug | Sensory World
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div id="renameModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-title">Rename Device</div>
+      <div class="input-group">
+        <div class="input-label">New name</div>
+        <input type="text" id="renameInput" placeholder="e.g. Living Room, Bedroom...">
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeRenameModal()">Cancel</button>
+        <button class="btn" onclick="saveRename()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Color Picker Modal -->
+  <div id="customColorModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-title">Custom Color</div>
+      
+      <div class="color-wheel-container" id="colorWheelContainer">
+        <div class="color-wheel">
+          <div class="color-wheel-overlay"></div>
+          <div class="color-picker-handle" id="colorPickerHandle"></div>
+        </div>
+      </div>
+      
+      <div class="selected-color-preview" id="selectedColorPreview"></div>
+      
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeCustomColorModal()">Cancel</button>
+        <button class="btn" onclick="applyCustomColor()">Apply</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Debug logging
+    let debugEnabled = false;
+    let debugMessages = [];
+    
+    function log(message) {
+      console.log(message);
+      debugMessages.push(`[${new Date().toLocaleTimeString()}] ${message}`);
+      if (debugMessages.length > 50) debugMessages.shift();
+      if (debugEnabled) {
+        document.getElementById('debugLog').innerHTML = debugMessages.join('<br>');
+        document.getElementById('debugLog').scrollTop = document.getElementById('debugLog').scrollHeight;
+      }
+    }
+    
+    function toggleDebug() {
+      debugEnabled = !debugEnabled;
+      document.getElementById('debugLog').classList.toggle('show', debugEnabled);
+    }
+    
+    // BLE Configuration
+    const SERVICE_UUID = '12345678-1234-1234-1234-123456789abc';
+    const CHAR_COLOR_UUID = '12345678-1234-1234-1234-123456789abd';
+    const CHAR_BRIGHTNESS_UUID = '12345678-1234-1234-1234-123456789abe';
+    const CHAR_POWER_UUID = '12345678-1234-1234-1234-123456789abf';
+    const CHAR_MODE_UUID = '12345678-1234-1234-1234-123456789ac0';
+    const CHAR_SPEED_UUID = '12345678-1234-1234-1234-123456789ac1';
+    
+    // Color palette from mother board IR remote
+    const quickColors = [
+      {r: 255, g: 0, b: 0, name: 'Red'},
+      {r: 0, g: 255, b: 0, name: 'Green'},
+      {r: 0, g: 0, b: 255, name: 'Blue'},
+      {r: 150, g: 170, b: 200, name: 'White'},
+      {r: 255, g: 128, b: 0, name: 'Orange'},
+      {r: 0, g: 255, b: 128, name: 'Mint'},
+      {r: 0, g: 80, b: 255, name: 'Sky Blue'},
+      {r: 255, g: 64, b: 0, name: 'Red-Orange'},
+      {r: 0, g: 255, b: 200, name: 'Cyan'},
+      {r: 128, g: 0, b: 255, name: 'Purple'},
+      {r: 255, g: 200, b: 0, name: 'Gold'},
+      {r: 0, g: 128, b: 255, name: 'Light Blue'},
+      {r: 255, g: 0, b: 128, name: 'Pink'},
+      {r: 255, g: 255, b: 0, name: 'Yellow'},
+      {r: 0, g: 255, b: 255, name: 'Aqua'},
+      {r: 255, g: 0, b: 255, name: 'Magenta'}
+    ];
+    
+    let currentDevice = null;
+    let connectedServer = null;
+    let colorChar = null;
+    let brightnessChar = null;
+    let powerChar = null;
+    let modeChar = null;
+    let speedChar = null;
+    let renamingDeviceId = null;
+    let savedDevices = [];
+    
+    // Custom color wheel variables
+    let customR = 255, customG = 255, customB = 255;
+    let isDragging = false;
+    
+    // Load saved devices
+    function loadSavedDevices() {
+      const saved = localStorage.getItem('sensory_devices');
+      if (saved) {
+        savedDevices = JSON.parse(saved);
+      }
+      renderDeviceList();
+    }
+    
+    function saveSavedDevices() {
+      localStorage.setItem('sensory_devices', JSON.stringify(savedDevices));
+    }
+    
+    // Render device list
+    function renderDeviceList() {
+      const listEl = document.getElementById('deviceList');
+      
+      if (savedDevices.length === 0) {
+        listEl.innerHTML = '<div style="text-align: center; opacity: 0.6; padding: 20px;">No devices found<br><small>Tap the button below</small></div>';
+        return;
+      }
+      
+      listEl.innerHTML = savedDevices.map((device, index) => `
+        <div class="device-item" onclick="connectToDevice('${device.id}')">
+          <div class="device-info">
+            <div class="device-name">
+              <span class="status-dot ${device.connected ? 'connected' : ''}"></span>
+              ${device.name}
+            </div>
+            <div class="device-id">${device.id.substring(0, 17)}...</div>
+          </div>
+          <div class="device-actions">
+            <button class="icon-btn" onclick="event.stopPropagation(); openRenameModal('${device.id}')">
+              ✏️
+            </button>
+            <button class="icon-btn" onclick="event.stopPropagation(); removeDevice('${device.id}')">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Render color grid
+    function renderColorGrid() {
+      const grid = document.getElementById('colorGrid');
+      
+      let html = '';
+      quickColors.forEach((color, index) => {
+        html += `<div class="color-circle" 
+                      style="background: rgb(${color.r}, ${color.g}, ${color.b})"
+                      onclick="setQuickColor(${color.r}, ${color.g}, ${color.b})"
+                      title="${color.name}"></div>`;
+      });
+      
+      // Add custom color button
+      html += `<div class="color-circle custom" onclick="openCustomColorModal()" title="Custom Color"></div>`;
+      
+      grid.innerHTML = html;
+    }
+    
+    // Scan for devices
+    async function scanDevices() {
+      try {
+        log('Scanning for devices...');
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: 'Sensory World' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        log('Device found: ' + device.name);
+        
+        const existingIndex = savedDevices.findIndex(d => d.id === device.id);
+        
+        if (existingIndex === -1) {
+          savedDevices.push({
+            id: device.id,
+            name: device.name || 'New Device',
+            connected: false
+          });
+          saveSavedDevices();
+        }
+        
+        renderDeviceList();
+        await connectToDevice(device.id);
+        
+      } catch (error) {
+        log('Scan error: ' + error.message);
+        if (error.name !== 'NotFoundError') {
+          alert('Error: ' + error.message);
+        }
+      }
+    }
+    
+    // Connect to device
+    async function connectToDevice(deviceId) {
+      try {
+        log('Connecting to device...');
+        
+        const device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: 'Sensory World' }],
+          optionalServices: [SERVICE_UUID]
+        });
+        
+        if (device.id !== deviceId) return;
+        
+        currentDevice = device;
+        log('GATT connecting...');
+        connectedServer = await device.gatt.connect();
+        log('Getting service...');
+        const service = await connectedServer.getPrimaryService(SERVICE_UUID);
+        
+        log('Getting characteristics...');
+        colorChar = await service.getCharacteristic(CHAR_COLOR_UUID);
+        log('✓ Color char');
+        brightnessChar = await service.getCharacteristic(CHAR_BRIGHTNESS_UUID);
+        log('✓ Brightness char');
+        powerChar = await service.getCharacteristic(CHAR_POWER_UUID);
+        log('✓ Power char');
+        modeChar = await service.getCharacteristic(CHAR_MODE_UUID);
+        log('✓ Mode char');
+        
+        try {
+          speedChar = await service.getCharacteristic(CHAR_SPEED_UUID);
+          log('✓ Speed char');
+        } catch (e) {
+          log('⚠ Speed char not found - update mother board code!');
+          speedChar = null;
+        }
+        
+        const deviceIndex = savedDevices.findIndex(d => d.id === deviceId);
+        if (deviceIndex !== -1) {
+          savedDevices[deviceIndex].connected = true;
+          document.getElementById('currentDeviceName').textContent = savedDevices[deviceIndex].name;
+        }
+        
+        document.getElementById('deviceListView').classList.add('hidden');
+        document.getElementById('deviceControlView').classList.remove('hidden');
+        
+        renderColorGrid();
+        setupControls();
+        
+        log('✓ Connected successfully!');
+        
+      } catch (error) {
+        log('Connection error: ' + error.message);
+        alert('Connection failed: ' + error.message);
+      }
+    }
+    
+    // Disconnect
+    function disconnectDevice() {
+      if (connectedServer) {
+        connectedServer.disconnect();
+      }
+      
+      savedDevices.forEach(d => d.connected = false);
+      currentDevice = null;
+      connectedServer = null;
+      colorChar = null;
+      brightnessChar = null;
+      powerChar = null;
+      modeChar = null;
+      speedChar = null;
+      
+      log('Disconnected');
+      showDeviceList();
+    }
+    
+    function showDeviceList() {
+      document.getElementById('deviceListView').classList.remove('hidden');
+      document.getElementById('deviceControlView').classList.add('hidden');
+      renderDeviceList();
+    }
+    
+    // Remove device
+    function removeDevice(deviceId) {
+      if (confirm('Are you sure you want to remove this device?')) {
+        savedDevices = savedDevices.filter(d => d.id !== deviceId);
+        saveSavedDevices();
+        renderDeviceList();
+      }
+    }
+    
+    // Rename modal
+    function openRenameModal(deviceId) {
+      renamingDeviceId = deviceId;
+      const device = savedDevices.find(d => d.id === deviceId);
+      if (device) {
+        document.getElementById('renameInput').value = device.name;
+        document.getElementById('renameModal').classList.remove('hidden');
+      }
+    }
+    
+    function closeRenameModal() {
+      document.getElementById('renameModal').classList.add('hidden');
+      renamingDeviceId = null;
+    }
+    
+    function saveRename() {
+      const newName = document.getElementById('renameInput').value.trim();
+      
+      if (!newName) {
+        alert('Please enter a name');
+        return;
+      }
+      
+      const deviceIndex = savedDevices.findIndex(d => d.id === renamingDeviceId);
+      if (deviceIndex !== -1) {
+        savedDevices[deviceIndex].name = newName;
+        saveSavedDevices();
+        renderDeviceList();
+        
+        if (currentDevice && currentDevice.id === renamingDeviceId) {
+          document.getElementById('currentDeviceName').textContent = newName;
+        }
+      }
+      
+      closeRenameModal();
+    }
+    
+    // Custom color wheel modal
+    function openCustomColorModal() {
+      document.getElementById('customColorModal').classList.remove('hidden');
+      setupColorWheel();
+    }
+    
+    function closeCustomColorModal() {
+      document.getElementById('customColorModal').classList.add('hidden');
+      isDragging = false;
+    }
+    
+    function setupColorWheel() {
+      const container = document.getElementById('colorWheelContainer');
+      const handle = document.getElementById('colorPickerHandle');
+      const preview = document.getElementById('selectedColorPreview');
+      
+      // Center handle initially
+      const centerX = 140;
+      const centerY = 140;
+      handle.style.left = centerX + 'px';
+      handle.style.top = centerY + 'px';
+      updateColorFromPosition(centerX, centerY);
+      
+      // Mouse/touch events
+      container.addEventListener('mousedown', startDrag);
+      container.addEventListener('touchstart', startDrag);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('touchmove', drag);
+      document.addEventListener('mouseup', stopDrag);
+      document.addEventListener('touchend', stopDrag);
+    }
+    
+    function startDrag(e) {
+      e.preventDefault();
+      isDragging = true;
+      updateHandlePosition(e);
+    }
+    
+    function drag(e) {
+      if (!isDragging) return;
+      e.preventDefault();
+      updateHandlePosition(e);
+    }
+    
+    function stopDrag() {
+      isDragging = false;
+    }
+    
+    function updateHandlePosition(e) {
+      const container = document.getElementById('colorWheelContainer');
+      const handle = document.getElementById('colorPickerHandle');
+      const rect = container.getBoundingClientRect();
+      
+      let clientX, clientY;
+      if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
+      let x = clientX - rect.left;
+      let y = clientY - rect.top;
+      
+      // Constrain to circle
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const dx = x - centerX;
+      const dy = y - centerY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxRadius = centerX - 15;
+      
+      if (distance > maxRadius) {
+        const angle = Math.atan2(dy, dx);
+        x = centerX + Math.cos(angle) * maxRadius;
+        y = centerY + Math.sin(angle) * maxRadius;
+      }
+      
+      handle.style.left = x + 'px';
+      handle.style.top = y + 'px';
+      
+      updateColorFromPosition(x, y);
+    }
+    
+    function updateColorFromPosition(x, y) {
+      const centerX = 140;
+      const centerY = 140;
+      const dx = x - centerX;
+      const dy = y - centerY;
+      
+      // Calculate angle (hue)
+      let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      if (angle < 0) angle += 360;
+      
+      // Calculate distance (saturation)
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxDistance = 125; // Max radius
+      const saturation = Math.min(distance / maxDistance, 1);
+      
+      // Convert HSV to RGB (Value = 1)
+      const rgb = hsvToRgb(angle, saturation, 1);
+      customR = rgb.r;
+      customG = rgb.g;
+      customB = rgb.b;
+      
+      // Update preview
+      const preview = document.getElementById('selectedColorPreview');
+      preview.style.background = `rgb(${customR}, ${customG}, ${customB})`;
+      
+      // Update handle color
+      const handle = document.getElementById('colorPickerHandle');
+      handle.style.background = `rgb(${customR}, ${customG}, ${customB})`;
+      
+      // Send color in real-time
+      setQuickColor(customR, customG, customB);
+    }
+    
+    function hsvToRgb(h, s, v) {
+      const c = v * s;
+      const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+      const m = v - c;
+      
+      let r, g, b;
+      if (h < 60) { r = c; g = x; b = 0; }
+      else if (h < 120) { r = x; g = c; b = 0; }
+      else if (h < 180) { r = 0; g = c; b = x; }
+      else if (h < 240) { r = 0; g = x; b = c; }
+      else if (h < 300) { r = x; g = 0; b = c; }
+      else { r = c; g = 0; b = x; }
+      
+      return {
+        r: Math.round((r + m) * 255),
+        g: Math.round((g + m) * 255),
+        b: Math.round((b + m) * 255)
+      };
+    }
+    
+    function applyCustomColor() {
+      setQuickColor(customR, customG, customB);
+      closeCustomColorModal();
+    }
+    
+    // Setup controls
+    function setupControls() {
+      const brightnessSlider = document.getElementById('brightnessSlider');
+      brightnessSlider.removeEventListener('input', brightnessHandler);
+      brightnessSlider.addEventListener('input', brightnessHandler);
+    }
+    
+    function brightnessHandler(e) {
+      setBrightness(parseInt(e.target.value));
+    }
+    
+    // Set quick color (immediate)
+    async function setQuickColor(r, g, b) {
+      if (!colorChar) return;
+      
+      try {
+        const data = new Uint8Array([r, g, b]);
+        await colorChar.writeValue(data);
+        
+        document.getElementById('currentColor').style.background = `rgb(${r},${g},${b})`;
+        
+        log(`Color: RGB(${r},${g},${b})`);
+      } catch (error) {
+        log('Error setting color: ' + error.message);
+      }
+    }
+    
+    // Set brightness
+    async function setBrightness(value) {
+      if (!brightnessChar) return;
+      
+      try {
+        const data = new Uint8Array([value]);
+        await brightnessChar.writeValue(data);
+        
+        document.getElementById('brightnessValue').textContent = value;
+        
+        log(`Brightness: ${value}`);
+      } catch (error) {
+        log('Error setting brightness: ' + error.message);
+      }
+    }
+    
+    // Set power
+    async function setPower(isOn) {
+      if (!powerChar) return;
+      
+      try {
+        const data = new Uint8Array([isOn ? 1 : 0]);
+        await powerChar.writeValue(data);
+        
+        document.getElementById('powerOn').classList.toggle('active', isOn);
+        document.getElementById('powerOff').classList.toggle('active', !isOn);
+        
+        log(`Power: ${isOn ? 'ON' : 'OFF'}`);
+      } catch (error) {
+        log('Error setting power: ' + error.message);
+      }
+    }
+    
+    // Set effect
+    async function setEffect(effectType) {
+      if (!modeChar) return;
+      
+      try {
+        let modeValue;
+        if (effectType === 'rainbow') {
+          modeValue = 1;
+        } else if (effectType === 'fade') {
+          modeValue = 2;
+        }
+        
+        const data = new Uint8Array([modeValue]);
+        await modeChar.writeValue(data);
+        
+        log(`Effect: ${effectType} (mode=${modeValue})`);
+      } catch (error) {
+        log('Error setting effect: ' + error.message);
+      }
+    }
+    
+    // Update speed
+    async function updateSpeed() {
+      const speedValue = parseInt(document.getElementById('speedSlider').value);
+      document.getElementById('speedValue').textContent = speedValue + 'ms';
+      
+      if (!speedChar) {
+        log('⚠ Speed char not available - update mother board!');
+        return;
+      }
+      
+      try {
+        // Send as 2 bytes (uint16) - LOW byte first, HIGH byte second
+        const data = new Uint8Array(2);
+        data[0] = speedValue & 0xFF;        // Low byte
+        data[1] = (speedValue >> 8) & 0xFF; // High byte
+        
+        await speedChar.writeValue(data);
+        
+        log(`✓ Speed sent: ${speedValue}ms [${data[0]}, ${data[1]}]`);
+      } catch (error) {
+        log('✗ Speed error: ' + error.message);
+      }
+    }
+    
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSavedDevices();
+      log('App loaded - v3.1 Debug');
+    });
+  </script>
+
+</body>
+</html>
